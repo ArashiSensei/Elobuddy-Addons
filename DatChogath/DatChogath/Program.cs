@@ -145,7 +145,12 @@ namespace DatChogath
 
             if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.LaneClear))
             {
-                Farm();
+                FarmLane();
+            }
+
+            if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.JungleClear))
+            {
+                FarmJung();
             }
         }
 
@@ -226,7 +231,13 @@ namespace DatChogath
             }
 
         }
-        private static void Farm()
+
+        private static void FarmLane()
+        {
+
+        }
+
+        private static void FarmJung()
         {
 
         }
