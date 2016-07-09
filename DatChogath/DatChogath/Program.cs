@@ -58,7 +58,7 @@ namespace DatChogath
             E = new Spell.Active(spellSlot: SpellSlot.E);
 
             // R Spell Values
-            R = new Spell.Targeted(spellSlot: SpellSlot.R, spellRange: 250);
+            R = new Spell.Targeted(spellSlot: SpellSlot.R, spellRange: 175);
 
             // Creating the MainMenu
             ChogathMenu = MainMenu.AddMenu("DatChogath", "DatChogath");
@@ -114,6 +114,7 @@ namespace DatChogath
             DrawMenu.Add("W", new CheckBox("W Drawing"));
             DrawMenu.Add("R", new CheckBox("R Drawing"));
             DrawMenu.AddSeparator();
+            DrawMenu.AddGroupLabel("Global Drawings");
             DrawMenu.Add("allDr", new CheckBox("Disable all Drawings")); // FIND THE RIGHT WAY TO DISABLE ALL DRAWINGS
 
 
@@ -154,7 +155,7 @@ namespace DatChogath
 
             if (R.IsReady() && DrawMenu["R"].Cast<CheckBox>().CurrentValue)
             {
-                Drawing.DrawCircle(User.Position, R.Range, Color.Black);
+                Drawing.DrawCircle(User.Position, R.Range, Color.MediumPurple);
             }
             else
             {
