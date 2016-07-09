@@ -1,0 +1,11 @@
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Release\DatChogath.exe.config
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Release\DatChogath.exe
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Release\DatChogath.pdb
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Release\EloBuddy.dll
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Release\EloBuddy.SDK.dll
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Release\SharpDX.dll
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Release\Newtonsoft.Json.dll
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\obj\Release\DatChogath.csprojResolveAssemblyReference.cache
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\obj\Release\DatChogath.exe
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\obj\Release\DatChogath.pdb

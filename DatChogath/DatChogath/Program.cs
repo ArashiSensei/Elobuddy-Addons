@@ -48,7 +48,7 @@ namespace DatChogath
             Q = new Spell.Skillshot(spellSlot: SpellSlot.Q, spellRange: 950, skillShotType: SkillShotType.Circular, castDelay: 650, spellSpeed: null, spellWidth: 250);
 
             // W Spell Values
-            W = new Spell.Skillshot(spellSlot: SpellSlot.W, spellRange: 650, skillShotType: SkillShotType.Cone, castDelay: 25, spellSpeed: int.MaxValue, spellWidth: (int) (30*0.5));
+            W = new Spell.Skillshot(spellSlot: SpellSlot.W, spellRange: 650, skillShotType: SkillShotType.Cone, castDelay: 25, spellSpeed: int.MaxValue, spellWidth: (int)(30 * 0.5));
 
             // E Spell Values
             E = new Spell.Active(spellSlot: SpellSlot.E);
@@ -67,6 +67,16 @@ namespace DatChogath
             ComboMenu.Add("E", new CheckBox("Use E"));
             ComboMenu.Add("Z", new CheckBox("Use Z"));
 
+            // wtf
+            Game.OnTick += Game_OnTick;
+        }
+
+
+            private static void Game_OnTick(EventArgs args)
+        {
+
+        }
+
 
 
 
@@ -75,5 +85,5 @@ namespace DatChogath
 
         }
     }
-}
+
 
