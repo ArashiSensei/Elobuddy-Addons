@@ -127,12 +127,36 @@ namespace DatChogath
             // Triggers with core ticks
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnTick += Game_OnTick;
+            Interrupter.OnInterruptableSpell += Interrupter_OnInterruptableSpell;
         }
 
 
-            private static void Game_OnTick(EventArgs args)   // CODING ALL FEATURES
+            private static void Game_OnTick(EventArgs args)   // CODING Combo + Harass + farm + ultblock
         {
 
+        }
+
+        private static void Interrupter_OnInterruptableSpell(Obj_AI_Base sender,
+            Interrupter.InterruptableSpellEventArgs e)
+        {
+            var Inter = MiscMenu["Inter"].Cast<CheckBox>().CurrentValue;
+
+            {
+                if (Inter)
+                {
+                    if (sender.IsEnemy && W.IsReady() && sender.Distance(User) <= W.Range) 
+                    {
+                        W.Cast(sender);
+                        
+                    }
+                    if (sender.IsEnemy && Q.IsReady() && sender.Distance(User) <= Q.Range)
+                    {
+                        Q.Cast(sender);
+                    }
+
+
+                }
+            }
         }
 
         private static void Drawing_OnDraw(EventArgs args)
