@@ -63,7 +63,7 @@ namespace DatChogath
             // Creating the MainMenu
             ChogathMenu = MainMenu.AddMenu("DatChogath", "DatChogath");
 
-            ChogathMenu.AddLabel("Hello and welcome to my Chogath Addon Version: " + AddonVersion + " Feel free to give me feedbacks!" );
+            ChogathMenu.AddGroupLabel("Hello and welcome to my Chogath Addon Version: " + AddonVersion + "!" );
             ChogathMenu.AddSeparator();
             ChogathMenu.AddGroupLabel("Arashi from Elobuddy forums !");
 
@@ -74,56 +74,100 @@ namespace DatChogath
             ComboMenu.Add("Q", new CheckBox("Use Q"));
             ComboMenu.Add("W", new CheckBox("Use W"));
             ComboMenu.Add("R", new CheckBox("Use R"));
+            ComboMenu.AddSeparator();
+            ComboMenu.AddGroupLabel("Others Combo Settings");
+            ComboMenu.Add("uoR", new CheckBox("Only Use R if Killable"));
 
             // Sub HarassMenu
             HarassMenu = ChogathMenu.AddSubMenu("Harass Settings");
 
             HarassMenu.AddGroupLabel("Spells in Harass Mode");
             HarassMenu.Add("Q", new CheckBox("Use Q"));
+            HarassMenu.Add("qHar", new Slider("Cast Q if Mana > ", 50));
+            HarassMenu.AddSeparator();
             HarassMenu.Add("W", new CheckBox("Use W"));
+            HarassMenu.Add("wHar", new Slider("Cast W if Mana > ", 50));
 
             //Sub FarmMenu
             FarmMenu = ChogathMenu.AddSubMenu("Farming Settings");
 
             FarmMenu.AddGroupLabel("Spells in Farming Mode");
             FarmMenu.Add("Q", new CheckBox("Use Q"));
+            FarmMenu.Add("qFarm", new Slider("Cast Q if Mana > ",50));
+            FarmMenu.AddSeparator();
             FarmMenu.Add("W", new CheckBox("Use W"));
+            FarmMenu.Add("wFarm", new Slider("Cast W if Mana > ", 50));
+            FarmMenu.AddSeparator();
             FarmMenu.Add("R", new CheckBox("Stack R"));
+            FarmMenu.Add("rFarm", new Slider("Stack R if Mana > ", 50));
 
             //Sub MiscMenu
             MiscMenu = ChogathMenu.AddSubMenu("Other Settings");
 
-            MiscMenu.AddGroupLabel("Others features");
+            MiscMenu.AddGroupLabel("Others features"); // TO DO ADD NEW FEATURES
 
             //Sub DrawMenu
             DrawMenu = ChogathMenu.AddSubMenu("Drawings Settings");
 
-            DrawMenu.AddGroupLabel("Drawn Spells");
+            DrawMenu.AddGroupLabel("Spells Range");
             DrawMenu.Add("Q", new CheckBox("Q Drawing"));
             DrawMenu.Add("W", new CheckBox("W Drawing"));
             DrawMenu.Add("R", new CheckBox("R Drawing"));
             DrawMenu.AddSeparator();
-            DrawMenu.AddLabel("");
-            
+            DrawMenu.Add("allDr", new CheckBox("Disable all Drawings")); // FIND THE RIGHT WAY TO DISABLE ALL DRAWINGS
 
-            
+
+
             // Triggers with core ticks
+            Drawing.OnDraw += Drawing_OnDraw;
             Game.OnTick += Game_OnTick;
         }
 
 
-            private static void Game_OnTick(EventArgs args)
+            private static void Game_OnTick(EventArgs args)   // CODING ALL FEATURES
         {
 
         }
 
+        private static void Drawing_OnDraw(EventArgs args)
+        {
+            if (DrawMenu["AllDr"].Cast<CheckBox>().CurrentValue)
+            {
+                return;
+            }
 
+            if (Q.IsReady() && DrawMenu["Q"].Cast<CheckBox>().CurrentValue)
+            {
+                Drawing.DrawCircle(User.Position, Q.Range, Color.Purple);
+            }
+            else
+            {    
+            }
 
+            if (W.IsReady() && DrawMenu["W"].Cast<CheckBox>().CurrentValue)
+            {
+                Drawing.DrawCircle(User.Position, W.Range, Color.MediumPurple);
+            }
+            else
+            {               
+            }
 
-
-
-
+            if (R.IsReady() && DrawMenu["R"].Cast<CheckBox>().CurrentValue)
+            {
+                Drawing.DrawCircle(User.Position, R.Range, Color.Black);
+            }
+            else
+            {
+            }
         }
+
+
+
+
+
+
+
+    }
     }
 
 
