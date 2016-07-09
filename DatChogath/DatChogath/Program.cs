@@ -104,7 +104,12 @@ namespace DatChogath
             //Sub MiscMenu
             MiscMenu = ChogathMenu.AddSubMenu("Other Settings");
 
-            MiscMenu.AddGroupLabel("Others features"); // TO DO ADD NEW FEATURES
+            MiscMenu.AddGroupLabel("Others features");
+            MiscMenu.Add("blockR", new CheckBox("Block R if it wont kill"));
+            MiscMenu.AddSeparator();
+            MiscMenu.AddGroupLabel("Interruper Settings");
+            MiscMenu.Add("Inter", new CheckBox("Interrupt all spells that it cans"));
+
 
             //Sub DrawMenu
             DrawMenu = ChogathMenu.AddSubMenu("Drawings Settings");
@@ -115,7 +120,7 @@ namespace DatChogath
             DrawMenu.Add("R", new CheckBox("R Drawing"));
             DrawMenu.AddSeparator();
             DrawMenu.AddGroupLabel("Global Drawings");
-            DrawMenu.Add("allDr", new CheckBox("Disable all Drawings")); // FIND THE RIGHT WAY TO DISABLE ALL DRAWINGS
+            DrawMenu.Add("allDr", new CheckBox("Disable all Drawings")); 
 
 
 
