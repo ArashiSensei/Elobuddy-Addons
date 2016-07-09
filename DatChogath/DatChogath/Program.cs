@@ -52,7 +52,7 @@ namespace DatChogath
             Q = new Spell.Skillshot(spellSlot: SpellSlot.Q, spellRange: 950, skillShotType: SkillShotType.Circular, castDelay: 650, spellSpeed: null, spellWidth: 250);
 
             // W Spell Values
-            W = new Spell.Skillshot(spellSlot: SpellSlot.W, spellRange: 650, skillShotType: SkillShotType.Cone, castDelay: 25, spellSpeed: int.MaxValue, spellWidth: (int)(30 * 0.5));
+            W = new Spell.Skillshot(spellSlot: SpellSlot.W, spellRange: 650, skillShotType: SkillShotType.Cone, castDelay: 25, spellSpeed: int.MaxValue, spellWidth: 250);
 
             // E Spell Values
             E = new Spell.Active(spellSlot: SpellSlot.E);
@@ -131,7 +131,102 @@ namespace DatChogath
         }
 
 
-            private static void Game_OnTick(EventArgs args)   // CODING Combo + Harass + farm + ultblock
+            private static void Game_OnTick(EventArgs args)   // CODING farm + ultblock
+        {
+            if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Combo))
+            {
+                Combo();
+            }
+
+            if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Harass))
+            {
+                Harass();
+            }
+
+            if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.LaneClear))
+            {
+                Farm();
+            }
+        }
+
+        private static void Harass()
+        {
+            var Target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            if (Target == null) return;
+            {
+                if (HarassMenu["Q"].Cast<CheckBox>().CurrentValue)
+                {
+
+                    var Qpred = Q.GetPrediction(Target);
+                    if (!Target.IsValidTarget()) return;
+                    if (Q.IsInRange(Target) && Q.IsReady() && Qpred.HitChance >= HitChance.High && ObjectManager.Player.ManaPercent >= HarassMenu["qHar"].Cast<Slider>().CurrentValue)
+                    {
+                        Q.Cast(Target);
+                    }
+                }
+
+
+                if (HarassMenu["W"].Cast<CheckBox>().CurrentValue)
+                {
+
+                    var Wpred = W.GetPrediction(Target);
+                    if (!Target.IsValidTarget()) return;
+                    if (W.IsInRange(Target) && W.IsReady() && Wpred.HitChance >= HitChance.High && ObjectManager.Player.ManaPercent >= HarassMenu["wHar"].Cast<Slider>().CurrentValue)
+                    {
+                        W.Cast(Target);
+                    }
+
+                }
+            }
+        }
+        private static void Combo()
+        {
+
+            var Target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            if (Target == null) return;
+            {
+                if (ComboMenu["Q"].Cast<CheckBox>().CurrentValue)
+                {
+
+                    var Qpred = Q.GetPrediction(Target);
+                    if (!Target.IsValidTarget()) return;
+                    if (Q.IsInRange(Target) && Q.IsReady() && Qpred.HitChance >= HitChance.High)
+                    {
+                        Q.Cast(Target);
+                    }
+                }
+
+
+                if (ComboMenu["W"].Cast<CheckBox>().CurrentValue)
+                {
+
+                    var Wpred = W.GetPrediction(Target);
+                    if (!Target.IsValidTarget()) return;
+                    if (W.IsInRange(Target) && W.IsReady() && Wpred.HitChance >= HitChance.High)
+                    {
+                        W.Cast(Target);
+                    }
+
+                }
+
+                if (ComboMenu["R"].Cast<CheckBox>().CurrentValue)
+                {
+
+                    if (!Target.IsValidTarget()) return;
+                    if (R.IsInRange(Target) && R.IsReady())
+                    {
+                        if (User.GetSpellDamage(Target, SpellSlot.R, 0) > Target.Health)
+                        {
+                            R.Cast(Target);
+                        }
+                        
+                    }
+
+                }
+            }
+
+        }
+        private static void Farm()
         {
 
         }
