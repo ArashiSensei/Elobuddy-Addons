@@ -24,14 +24,12 @@ namespace DatChogath
 
         }
         public static Version AddonVersion;
-        private static AIHeroClient User = Player.Instance; // our player.
+        private static AIHeroClient User = Player.Instance; // player.
 
         // Declaring spells.
 
-        // Q
-        public static Spell.Skillshot Q;
-        //W
-        public static Spell.Skillshot W;
+        // Q & W
+        public static Spell.Skillshot Q,W;
         //E
         public static Spell.Active E;
         //R      
@@ -63,7 +61,7 @@ namespace DatChogath
             // Creating the MainMenu
             ChogathMenu = MainMenu.AddMenu("DatChogath", "DatChogath");
 
-            ChogathMenu.AddGroupLabel("Hello and welcome to my Chogath Addon Version: " + AddonVersion + "!" );
+            ChogathMenu.AddGroupLabel("Hello and welcome to my Chogath Addon Version: " + AddonVersion + "!");
             ChogathMenu.AddSeparator();
             ChogathMenu.AddGroupLabel("Arashi from Elobuddy forums !");
 
@@ -93,7 +91,7 @@ namespace DatChogath
 
             FarmMenu.AddGroupLabel("Spells in Farming Mode");
             FarmMenu.Add("Q", new CheckBox("Use Q"));
-            FarmMenu.Add("qFarm", new Slider("Cast Q if Mana > ",50));
+            FarmMenu.Add("qFarm", new Slider("Cast Q if Mana > ", 50));
             FarmMenu.AddSeparator();
             FarmMenu.Add("W", new CheckBox("Use W"));
             FarmMenu.Add("wFarm", new Slider("Cast W if Mana > ", 50));
@@ -120,7 +118,7 @@ namespace DatChogath
             DrawMenu.Add("R", new CheckBox("R Drawing"));
             DrawMenu.AddSeparator();
             DrawMenu.AddGroupLabel("Global Drawings");
-            DrawMenu.Add("allDr", new CheckBox("Disable all Drawings")); 
+            DrawMenu.Add("allDr", new CheckBox("Disable all Drawings"));
 
 
 
@@ -128,10 +126,12 @@ namespace DatChogath
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnTick += Game_OnTick;
             Interrupter.OnInterruptableSpell += Interrupter_OnInterruptableSpell;
+
+            Chat.Print("DatChogath " + AddonVersion + " by Arashi Loaded!");
         }
 
 
-            private static void Game_OnTick(EventArgs args)   // CODING farm + ultblock
+        private static void Game_OnTick(EventArgs args)   // CODING farm + ultblock
         {
             if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Combo))
             {
@@ -219,7 +219,7 @@ namespace DatChogath
                         {
                             R.Cast(Target);
                         }
-                        
+
                     }
 
                 }
@@ -239,10 +239,10 @@ namespace DatChogath
             {
                 if (Inter)
                 {
-                    if (sender.IsEnemy && W.IsReady() && sender.Distance(User) <= W.Range) 
+                    if (sender.IsEnemy && W.IsReady() && sender.Distance(User) <= W.Range)
                     {
                         W.Cast(sender);
-                        
+
                     }
                     if (sender.IsEnemy && Q.IsReady() && sender.Distance(User) <= Q.Range)
                     {
@@ -266,7 +266,7 @@ namespace DatChogath
                 Drawing.DrawCircle(User.Position, Q.Range, Color.Purple);
             }
             else
-            {    
+            {
             }
 
             if (W.IsReady() && DrawMenu["W"].Cast<CheckBox>().CurrentValue)
@@ -274,7 +274,7 @@ namespace DatChogath
                 Drawing.DrawCircle(User.Position, W.Range, Color.MediumPurple);
             }
             else
-            {               
+            {
             }
 
             if (R.IsReady() && DrawMenu["R"].Cast<CheckBox>().CurrentValue)
@@ -285,14 +285,8 @@ namespace DatChogath
             {
             }
         }
-
-
-
-
-
-
-
     }
-    }
+}
+
 
 
