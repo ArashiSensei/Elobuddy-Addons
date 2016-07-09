@@ -1,0 +1,2 @@
+C:\Users\Coco\Documents\GitHub\Elobuddy Addons\DatChogath\DatChogath\bin\Debug\DatChogath.exe.config
+C:\Users\Coco\Documents\GitHub\Elobuddy-Addons\DatChogath\DatChogath\bin\Debug\DatChogath.exe.config
