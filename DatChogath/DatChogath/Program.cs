@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using EloBuddy.SDK.Events;
 using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 using Color = System.Drawing.Color;
+using Version = System.Version;
 
 
 namespace DatChogath
@@ -21,6 +23,7 @@ namespace DatChogath
             Loading.OnLoadingComplete += Loading_OnLoadingComplete;
 
         }
+        public static Version AddonVersion;
         private static AIHeroClient User = Player.Instance; // our player.
 
         // Declaring spells.
@@ -35,10 +38,11 @@ namespace DatChogath
         public static Spell.Targeted R;
         // Declaring Menus.
 
-        private static Menu ChogathMenu, ComboMenu;
+        private static Menu ChogathMenu, ComboMenu, HarassMenu, MiscMenu, FarmMenu, DrawMenu;
 
         private static void Loading_OnLoadingComplete(EventArgs args)
         {
+            AddonVersion = Assembly.GetExecutingAssembly().GetName().Version;
             if (User.ChampionName != "Chogath")
             {
                 return;
@@ -59,15 +63,51 @@ namespace DatChogath
             // Creating the MainMenu
             ChogathMenu = MainMenu.AddMenu("DatChogath", "DatChogath");
 
+            ChogathMenu.AddLabel("Hello and welcome to my Chogath Addon Version: " + AddonVersion + " Feel free to give me feedbacks!" );
+            ChogathMenu.AddSeparator();
+            ChogathMenu.AddGroupLabel("Arashi from Elobuddy forums !");
+
             // Sub ComboMenu
             ComboMenu = ChogathMenu.AddSubMenu("Combo Settings");
 
+            ComboMenu.AddGroupLabel(" Spells in Combo Mode");
             ComboMenu.Add("Q", new CheckBox("Use Q"));
             ComboMenu.Add("W", new CheckBox("Use W"));
-            ComboMenu.Add("E", new CheckBox("Use E"));
-            ComboMenu.Add("Z", new CheckBox("Use Z"));
+            ComboMenu.Add("R", new CheckBox("Use R"));
 
-            // wtf
+            // Sub HarassMenu
+            HarassMenu = ChogathMenu.AddSubMenu("Harass Settings");
+
+            HarassMenu.AddGroupLabel("Spells in Harass Mode");
+            HarassMenu.Add("Q", new CheckBox("Use Q"));
+            HarassMenu.Add("W", new CheckBox("Use W"));
+
+            //Sub FarmMenu
+            FarmMenu = ChogathMenu.AddSubMenu("Farming Settings");
+
+            FarmMenu.AddGroupLabel("Spells in Farming Mode");
+            FarmMenu.Add("Q", new CheckBox("Use Q"));
+            FarmMenu.Add("W", new CheckBox("Use W"));
+            FarmMenu.Add("R", new CheckBox("Stack R"));
+
+            //Sub MiscMenu
+            MiscMenu = ChogathMenu.AddSubMenu("Other Settings");
+
+            MiscMenu.AddGroupLabel("Others features");
+
+            //Sub DrawMenu
+            DrawMenu = ChogathMenu.AddSubMenu("Drawings Settings");
+
+            DrawMenu.AddGroupLabel("Drawn Spells");
+            DrawMenu.Add("Q", new CheckBox("Q Drawing"));
+            DrawMenu.Add("W", new CheckBox("W Drawing"));
+            DrawMenu.Add("R", new CheckBox("R Drawing"));
+            DrawMenu.AddSeparator();
+            DrawMenu.AddLabel("");
+            
+
+            
+            // Triggers with core ticks
             Game.OnTick += Game_OnTick;
         }
 
