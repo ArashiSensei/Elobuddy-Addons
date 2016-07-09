@@ -108,7 +108,7 @@ namespace DatChogath
             MiscMenu.Add("blockR", new CheckBox("Block R if it wont kill"));
             MiscMenu.AddSeparator();
             MiscMenu.AddGroupLabel("Interruper Settings");
-            MiscMenu.Add("Inter", new CheckBox("Interrupt all spells that it cans"));
+            MiscMenu.Add("Inter", new CheckBox("Interrupt all spells that it cans ( Q or W)"));
 
 
             //Sub DrawMenu
