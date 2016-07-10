@@ -62,6 +62,7 @@ namespace DatChogath
             ChogathMenu = MainMenu.AddMenu("DatChogath", "DatChogath");
 
             ChogathMenu.AddGroupLabel("Hello and welcome to my Chogath Addon Version: " + AddonVersion + "!");
+            ChogathMenu.AddGroupLabel("Thanks to MeLoDaGg for his farming code, and Definitely not Kappa !");
             ChogathMenu.AddSeparator();
             ChogathMenu.AddGroupLabel("Arashi from Elobuddy forums !");
 
@@ -74,7 +75,7 @@ namespace DatChogath
             ComboMenu.Add("R", new CheckBox("Use R"));
             ComboMenu.AddSeparator();
             ComboMenu.AddGroupLabel("Others Combo Settings");
-            ComboMenu.Add("uoR", new CheckBox("Only Use R if Killable"));
+            ComboMenu.Add("Ign", new CheckBox("Ignite if Killable ( WIP )"));
 
             // Sub HarassMenu
             HarassMenu = ChogathMenu.AddSubMenu("Harass Settings");
@@ -92,10 +93,10 @@ namespace DatChogath
             FarmMenu.AddGroupLabel("Spells in LaneClear");
             FarmMenu.Add("Q", new CheckBox("Use Q"));
             FarmMenu.Add("qFarm", new Slider("Cast Q if Mana > ", 50));
+            FarmMenu.Add("mqMin", new Slider("Cast Q if minions > ",1,3,6));
             FarmMenu.Add("W", new CheckBox("Use W"));
             FarmMenu.Add("wFarm", new Slider("Cast W if Mana > ", 50));
-            FarmMenu.Add("R", new CheckBox("Stack R"));
-            FarmMenu.Add("rFarm", new Slider("Stack R if Mana > ", 50));
+            FarmMenu.Add("mwMin", new Slider("Cast W if minions > ", 1, 3, 6));
             FarmMenu.AddGroupLabel("Spells in JungleClear");
             FarmMenu.Add("jQ", new CheckBox("Use Q"));
             FarmMenu.Add("jW", new CheckBox("Use W"));
@@ -105,7 +106,9 @@ namespace DatChogath
             MiscMenu = ChogathMenu.AddSubMenu("Other Settings");
 
             MiscMenu.AddGroupLabel("Others features");
-            MiscMenu.Add("blockR", new CheckBox("Block R if it wont kill"));
+            MiscMenu.Add("blockR", new CheckBox("Block R if it wont kill ( WIP )"));
+            MiscMenu.Add("StackR", new CheckBox("Auto Stack R ( WIP )"));
+            MiscMenu.Add("FlashR", new CheckBox("Auto Flash R if killable ( WIP )"));
             MiscMenu.AddSeparator();
             MiscMenu.AddGroupLabel("Interruper Settings");
             MiscMenu.Add("Inter", new CheckBox("Interrupt all spells that it cans ( Q or W)"));
@@ -133,7 +136,7 @@ namespace DatChogath
         }
 
 
-        private static void Game_OnTick(EventArgs args)   // CODING farm + ultblock
+        private static void Game_OnTick(EventArgs args)   // CODING ultblock + flashr + stackR
         {
             if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Combo))
             {
@@ -151,7 +154,13 @@ namespace DatChogath
                 JungleClear();
                 
             }
-           
+
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
+            {
+                LaneClear();
+
+            }
+
         }
 
         private static void Harass()
@@ -240,7 +249,7 @@ namespace DatChogath
             
         
             
-            private static void JungleClear()
+            private static void JungleClear()                      // Credits to MeLoDaGg
         {
             var QJung = FarmMenu["jQ"].Cast<CheckBox>().CurrentValue;
             var WJung = FarmMenu["jW"].Cast<CheckBox>().CurrentValue;
@@ -261,12 +270,53 @@ namespace DatChogath
                 }
             }
 
-        } 
+        }
 
-            
-        
 
-    
+        private static void LaneClear()                              // Credits to MeLoDaGg
+        {
+            var QLane = FarmMenu["Q"].Cast<CheckBox>().CurrentValue;
+            var WLane = FarmMenu["W"].Cast<CheckBox>().CurrentValue;
+
+            if (Q.IsReady() && QLane)
+            {
+                foreach (
+                    var enemyMinion in
+                        ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsEnemy && x.Distance(User) <= Q.Range))
+                {
+                    var enemyMinionsInRange =
+                        ObjectManager.Get<Obj_AI_Minion>()
+                            .Where(x => x.IsEnemy && x.Distance(enemyMinion) <= 185)
+                            .Count();
+                    if (enemyMinionsInRange >= FarmMenu["mqMin"].Cast<Slider>().CurrentValue)
+                    {
+                        Q.Cast(enemyMinion);
+                    }
+                }
+                
+                    if (W.IsReady() && WLane)
+                    {
+
+
+                    foreach (
+                        var enemyMinion in
+                            ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsEnemy && x.Distance(User) <= W.Range))
+                    {
+                        var enemyMinionsInRange =
+                            ObjectManager.Get<Obj_AI_Minion>()
+                                .Where(x => x.IsEnemy && x.Distance(enemyMinion) <= 185)
+                                .Count();
+                        if (enemyMinionsInRange >= FarmMenu["mwMin"].Cast<Slider>().CurrentValue)
+                        {
+                            W.Cast(enemyMinion.Position);
+                        }
+                    }
+
+                }
+            }
+        }
+
+
 
         private static void Interrupter_OnInterruptableSpell(Obj_AI_Base sender,
             Interrupter.InterruptableSpellEventArgs e)
