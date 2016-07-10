@@ -89,15 +89,17 @@ namespace DatChogath
             //Sub FarmMenu
             FarmMenu = ChogathMenu.AddSubMenu("Farming Settings");
 
-            FarmMenu.AddGroupLabel("Spells in Farming Mode");
+            FarmMenu.AddGroupLabel("Spells in LaneClear");
             FarmMenu.Add("Q", new CheckBox("Use Q"));
             FarmMenu.Add("qFarm", new Slider("Cast Q if Mana > ", 50));
-            FarmMenu.AddSeparator();
             FarmMenu.Add("W", new CheckBox("Use W"));
             FarmMenu.Add("wFarm", new Slider("Cast W if Mana > ", 50));
-            FarmMenu.AddSeparator();
             FarmMenu.Add("R", new CheckBox("Stack R"));
             FarmMenu.Add("rFarm", new Slider("Stack R if Mana > ", 50));
+            FarmMenu.AddGroupLabel("Spells in JungleClear");
+            FarmMenu.Add("jQ", new CheckBox("Use Q"));
+            FarmMenu.Add("jW", new CheckBox("Use W"));
+
 
             //Sub MiscMenu
             MiscMenu = ChogathMenu.AddSubMenu("Other Settings");
@@ -143,15 +145,13 @@ namespace DatChogath
                 Harass();
             }
 
-            if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.LaneClear))
-            {
-                FarmLane();
-            }
 
-            if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.JungleClear))
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
             {
-                FarmJung();
+                JungleClear();
+                
             }
+           
         }
 
         private static void Harass()
@@ -232,33 +232,39 @@ namespace DatChogath
 
         }
 
-        private static void FarmLane()
+
+
+        
+
+                
+            
+        
+            
+            private static void JungleClear()
         {
+            var QJung = FarmMenu["jQ"].Cast<CheckBox>().CurrentValue;
+            var WJung = FarmMenu["jW"].Cast<CheckBox>().CurrentValue;
 
-        }
-
-        private static void FarmJung()
-        {
-            var qJun = FarmMenu["qFarm"].Cast<CheckBox>().CurrentValue;
-            var wJun = FarmMenu["wFarm"].Cast<CheckBox>().CurrentValue;
-
+            if (QJung)
             {
-                var junleminions = EntityManager.MinionsAndMonsters.GetJungleMonsters().OrderByDescending(a => a.MaxHealth).FirstOrDefault(a => a.IsValidTarget(900));
-
-                if (qJun && Q.IsReady() && junleminions.IsValidTarget(Q.Range))
+                var minion =
+                    EntityManager.MinionsAndMonsters.GetJungleMonsters(User.ServerPosition, 950f, true)
+                        .FirstOrDefault();
+                if (Q.IsReady() && QJung && minion != null)
                 {
-                    Q.Cast(junleminions);
+                    Q.Cast(minion.Position);
                 }
-                if (wJun && W.IsReady() && junleminions.IsValidTarget(450))
+
+                if (W.IsReady() && WJung && minion != null)
                 {
-                    if (wJun && W.IsReady() && junleminions.IsValidTarget(W.Range))
-                    {
-                        W.Cast(junleminions);
-                    }
-                    
+                    W.Cast(minion.Position);
                 }
             }
-        }
+
+        } 
+
+            
+        
 
     
 
