@@ -163,7 +163,7 @@ namespace DatChogath
 
             }
                 IgniteUsage();
-                AutoStackR();
+                
 
         }
 
@@ -357,29 +357,6 @@ namespace DatChogath
             }
         }
 
-        private static void AutoStackR()
-        {
-            var autoStackR = FarmMenu["StackR"].Cast<CheckBox>().CurrentValue;
-
-            {
-                if(autoStackR)
-                {
-                    var qminion =
-                EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, User.Position,
-                    R.Range)
-                    .FirstOrDefault(m =>
-                        m.Distance(User) <= 175 && m.Health <= User.GetSpellDamage(m, SpellSlot.R, 0) &&
-                        m.IsValidTarget());
-
-                    if (R.IsReady() && autoStackR && qminion != null && !Orbwalker.IsAutoAttacking)
-                    {
-                        R.Cast();
-                    }
-
-                }
-            }
-            
-        }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
