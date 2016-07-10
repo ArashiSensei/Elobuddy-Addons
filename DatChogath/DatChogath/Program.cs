@@ -31,6 +31,8 @@ namespace DatChogath
         public static Spell.Active E;
         //R      
         public static Spell.Targeted R;
+        //Ignite summoner
+        public static SpellSlot Ignite { get; private set; }
         // Declaring Menus.
 
         private static Menu ChogathMenu, ComboMenu, HarassMenu, MiscMenu, FarmMenu, DrawMenu;
@@ -54,6 +56,9 @@ namespace DatChogath
 
             // R Spell Values
             R = new Spell.Targeted(spellSlot: SpellSlot.R, spellRange: 175);
+
+            //Ignite values
+            Ignite = ObjectManager.Player.GetSpellSlotFromName("summonerdot");
 
             // Creating the MainMenu
             ChogathMenu = MainMenu.AddMenu("DatChogath", "DatChogath");
@@ -133,7 +138,7 @@ namespace DatChogath
         }
 
 
-        private static void Game_OnTick(EventArgs args)   // CODING ultblock + flashr + stackR
+        private static void Game_OnTick(EventArgs args)   // CODING ultblock + flashr + stackR + Ignite
         {
             if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Combo))
             {
@@ -157,6 +162,7 @@ namespace DatChogath
                 LaneClear();
 
             }
+                IgniteUsage();
 
         }
 
@@ -239,12 +245,24 @@ namespace DatChogath
         }
 
 
+        private static void IgniteUsage()
+        {
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
 
-        
 
-                
-            
-        
+            if (!Q.IsOnCooldown && !W.IsOnCooldown && !R.IsOnCooldown) return;
+
+            else
+            {
+                var useIgnite = ComboMenu["Ign"].Cast<CheckBox>().CurrentValue;
+
+                if (useIgnite && target != null)
+                {
+                    if (User.GetSummonerSpellDamage(target, DamageLibrary.SummonerSpells.Ignite) > target.Health)
+                        User.Spellbook.CastSpell(Ignite, target);
+                }
+            }
+        }        
             
             private static void JungleClear()                      // Credits to MeLoDaGg
         {
