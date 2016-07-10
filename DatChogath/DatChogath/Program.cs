@@ -77,7 +77,7 @@ namespace DatChogath
             ComboMenu.Add("R", new CheckBox("Use R"));
             ComboMenu.AddSeparator();
             ComboMenu.AddGroupLabel("Others Combo Settings");
-            ComboMenu.Add("Ign", new CheckBox("Ignite if Killable ( WIP )"));
+            ComboMenu.Add("Ign", new CheckBox("Ignite if Killable"));
 
             // Sub HarassMenu
             HarassMenu = ChogathMenu.AddSubMenu("Harass Settings");
@@ -95,10 +95,10 @@ namespace DatChogath
             FarmMenu.AddGroupLabel("Spells in LaneClear");
             FarmMenu.Add("Q", new CheckBox("Use Q"));
             FarmMenu.Add("qFarm", new Slider("Cast Q if Mana > ", 50));
-            FarmMenu.Add("mqMin", new Slider("Cast Q if minions > ",1,3,6));
+            FarmMenu.Add("mqMin", new Slider("Cast Q if minions > ",3,1,6));
             FarmMenu.Add("W", new CheckBox("Use W"));
             FarmMenu.Add("wFarm", new Slider("Cast W if Mana > ", 50));
-            FarmMenu.Add("mwMin", new Slider("Cast W if minions > ", 1, 3, 6));
+            FarmMenu.Add("mwMin", new Slider("Cast W if minions > ", 3, 1, 6));
             FarmMenu.AddGroupLabel("Spells in JungleClear");
             FarmMenu.Add("jQ", new CheckBox("Use Q"));
             FarmMenu.Add("jW", new CheckBox("Use W"));
@@ -106,12 +106,6 @@ namespace DatChogath
 
             //Sub MiscMenu
             MiscMenu = ChogathMenu.AddSubMenu("Other Settings");
-
-            MiscMenu.AddGroupLabel("Others features");
-            MiscMenu.Add("blockR", new CheckBox("Block R if it wont kill ( WIP )"));
-            MiscMenu.Add("StackR", new CheckBox("Auto Stack R ( WIP )"));
-            MiscMenu.Add("FlashR", new CheckBox("Auto Flash R if killable ( WIP )"));
-            MiscMenu.AddSeparator();
             MiscMenu.AddGroupLabel("Interruper Settings");
             MiscMenu.Add("Inter", new CheckBox("Interrupt all spells that it cans ( Q or W)"));
 
@@ -138,7 +132,7 @@ namespace DatChogath
         }
 
 
-        private static void Game_OnTick(EventArgs args)   // CODING ultblock + flashr + stackR 
+        private static void Game_OnTick(EventArgs args)  
         {
             if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Combo))
             {
@@ -251,7 +245,7 @@ namespace DatChogath
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
 
 
-            if (!Q.IsOnCooldown && !W.IsOnCooldown && !R.IsOnCooldown) return;
+            if (Q.IsReady() && W.IsReady() && R.IsReady()) return;
 
             else
             {
