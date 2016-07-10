@@ -138,7 +138,7 @@ namespace DatChogath
         }
 
 
-        private static void Game_OnTick(EventArgs args)   // CODING ultblock + flashr + stackR + Ignite
+        private static void Game_OnTick(EventArgs args)   // CODING ultblock + flashr + stackR 
         {
             if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Combo))
             {
