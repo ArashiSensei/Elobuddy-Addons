@@ -239,8 +239,28 @@ namespace DatChogath
 
         private static void FarmJung()
         {
+            var qJun = FarmMenu["qFarm"].Cast<CheckBox>().CurrentValue;
+            var wJun = FarmMenu["wFarm"].Cast<CheckBox>().CurrentValue;
 
+            {
+                var junleminions = EntityManager.MinionsAndMonsters.GetJungleMonsters().OrderByDescending(a => a.MaxHealth).FirstOrDefault(a => a.IsValidTarget(900));
+
+                if (qJun && Q.IsReady() && junleminions.IsValidTarget(Q.Range))
+                {
+                    Q.Cast(junleminions);
+                }
+                if (wJun && W.IsReady() && junleminions.IsValidTarget(450))
+                {
+                    if (wJun && W.IsReady() && junleminions.IsValidTarget(W.Range))
+                    {
+                        W.Cast(junleminions);
+                    }
+                    
+                }
+            }
         }
+
+    
 
         private static void Interrupter_OnInterruptableSpell(Obj_AI_Base sender,
             Interrupter.InterruptableSpellEventArgs e)
