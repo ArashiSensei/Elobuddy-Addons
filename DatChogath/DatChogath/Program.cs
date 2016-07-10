@@ -288,7 +288,7 @@ namespace DatChogath
                         ObjectManager.Get<Obj_AI_Minion>()
                             .Where(x => x.IsEnemy && x.Distance(enemyMinion) <= 185)
                             .Count();
-                    if (enemyMinionsInRange >= FarmMenu["mqMin"].Cast<Slider>().CurrentValue)
+                    if (enemyMinionsInRange >= FarmMenu["mqMin"].Cast<Slider>().CurrentValue && ObjectManager.Player.ManaPercent >= FarmMenu["qFarm"].Cast<Slider>().CurrentValue)
                     {
                         Q.Cast(enemyMinion);
                     }
@@ -306,7 +306,7 @@ namespace DatChogath
                             ObjectManager.Get<Obj_AI_Minion>()
                                 .Where(x => x.IsEnemy && x.Distance(enemyMinion) <= 185)
                                 .Count();
-                        if (enemyMinionsInRange >= FarmMenu["mwMin"].Cast<Slider>().CurrentValue)
+                        if (enemyMinionsInRange >= FarmMenu["mwMin"].Cast<Slider>().CurrentValue && ObjectManager.Player.ManaPercent >= FarmMenu["wFarm"].Cast<Slider>().CurrentValue)
                         {
                             W.Cast(enemyMinion.Position);
                         }
