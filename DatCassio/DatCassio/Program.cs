@@ -22,7 +22,7 @@ namespace DatCassio
         public static Version AddonVersion;
         private static AIHeroClient User = Player.Instance;
         public static Spell.Skillshot Q, W, R;
-        public static Spell.Targeted E;   
+        public static Spell.Targeted E;
         public static SpellSlot Ignite { get; private set; }
 
         private static Menu CassioMenu, ComboMenu, HarassMenu, MiscMenu, FarmMenu, DrawMenu;
@@ -64,7 +64,7 @@ namespace DatCassio
             ComboMenu.AddSeparator();
             ComboMenu.AddGroupLabel("Others Combo Settings");
             ComboMenu.Add("Ign", new CheckBox("Ignite if Killable"));
-            
+
 
             //HarassMenu
             HarassMenu = CassioMenu.AddSubMenu("Harass Settings");
@@ -76,8 +76,8 @@ namespace DatCassio
             HarassMenu.Add("E", new CheckBox("Use E"));
             HarassMenu.Add("onlyE", new CheckBox(" Only Use E if poisonned"));
             HarassMenu.Add("eHar", new Slider("Cast E if Mana > ", 50));
-           
-            
+
+
             //FarmMenu
             FarmMenu = CassioMenu.AddSubMenu("Farming Settings");
 
@@ -90,7 +90,7 @@ namespace DatCassio
             FarmMenu.Add("W", new CheckBox("Use W"));
             FarmMenu.Add("wClear", new Slider("Cast W if Mana > ", 50));
             FarmMenu.Add("mwMin", new Slider("Cast W if minions > ", 3, 1, 6));
-            FarmMenu.Add("E", new CheckBox("Use E (Only if poisonned)"));
+            FarmMenu.Add("poisE", new CheckBox("Use E (Only if poisonned)"));
             FarmMenu.Add("eClear", new Slider("Cast E if Mana > ", 50));
             FarmMenu.AddGroupLabel("Spells in JungleClear");
             FarmMenu.Add("jungQ", new CheckBox("Use Q"));
@@ -103,6 +103,9 @@ namespace DatCassio
             MiscMenu.AddGroupLabel("Misc Settings");
             MiscMenu.Add("Gapcloser", new CheckBox("Use R on Gapcloser", false));
             MiscMenu.Add("Inter", new CheckBox("Use R to interrupt", false));
+            MiscMenu.Add("eKS", new CheckBox("Make your ally mad with E (KS)"));
+            MiscMenu.AddGroupLabel("Flee Settings");
+            MiscMenu.Add("qFlee", new CheckBox("Use Q to move faster"));
 
 
             //Sub DrawMenu
@@ -127,77 +130,163 @@ namespace DatCassio
         {
             if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Combo))
             {
-                
+                Combo();
             }
 
             if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Harass))
             {
-             
+                Harass();
             }
 
 
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
             {
-  
+                JungleClear();
 
             }
 
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
- 
+                LaneClear();
 
             }
 
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
             {
+                LastHit();
+                
+            }
 
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Flee))
+            {
+                Flee();
 
             }
 
 
 
+        }
+        private static void Combo()
+        {
+
+        }
+
+        private static void Harass()
+        {
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            var useQ = HarassMenu["Q"].Cast<CheckBox>().CurrentValue;
+            var onlyE = HarassMenu["onlyE"].Cast<CheckBox>().CurrentValue;
+
+            if (target == null) return;
+            {
+                if (useQ)
+                {
+
+                    var Qpred = Q.GetPrediction(target);
+                    if (!target.IsValidTarget()) return;
+                    if (Q.IsInRange(target) && Q.IsReady() && Qpred.HitChance >= HitChance.High && ObjectManager.Player.ManaPercent >= HarassMenu["qHar"].Cast<Slider>().CurrentValue)
+                    {
+                        Q.Cast(target);
+                    }
+                }
+
+
+                if (onlyE)
+                {
+                    if (!target.IsValidTarget()) return;
+                    if (E.IsInRange(target) && E.IsReady() && ObjectManager.Player.ManaPercent >= HarassMenu["eHar"].Cast<Slider>().CurrentValue && PoisonnedTarget(target))
+                    {
+                        E.Cast(target);
+                    }
+
+
+                }
+                else
+                {
+                    if (!target.IsValidTarget()) return;
+                    if (E.IsInRange(target) && E.IsReady() && ObjectManager.Player.ManaPercent >= HarassMenu["eHar"].Cast<Slider>().CurrentValue)
+                    {
+                        E.Cast(target);
+                    }
+
+                }
+            }
+
+        }
+
+        private static void LaneClear()
+        {
+
+        }
+
+        private static void LastHit()
+        {
+
+        }
+
+        private static void JungleClear()
+        {
+
+        }
+
+        private static void Flee()
+        {
+
+        }
+
+        public static bool PoisonnedTarget(Obj_AI_Base target)
+        {
+            return target.HasBuffOfType(BuffType.Poison);
+        }
+
+        public static bool PoisonnedMinion(Obj_AI_Minion minion)
+        {
+            return minion.HasBuffOfType(BuffType.Poison);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-            if (DrawMenu["AllDr"].Cast<CheckBox>().CurrentValue)
+            if (!User.IsDead)
             {
-                return;
+                if (DrawMenu["AllDr"].Cast<CheckBox>().CurrentValue)
+                {
+                    return;
+                }
+
+                if (Q.IsReady() && DrawMenu["drawQ"].Cast<CheckBox>().CurrentValue)
+                {
+                    Drawing.DrawCircle(User.Position, Q.Range, Color.Purple);
+                }
+                else
+                {
+                }
+
+                if (W.IsReady() && DrawMenu["drawW"].Cast<CheckBox>().CurrentValue)
+                {
+                    Drawing.DrawCircle(User.Position, W.Range, Color.MediumPurple);
+                }
+                else
+                {
+                }
+
+                if (E.IsReady() && DrawMenu["drawE"].Cast<CheckBox>().CurrentValue)
+                {
+                    Drawing.DrawCircle(User.Position, E.Range, Color.MediumPurple);
+                }
+                else
+                {
+                }
+
+                if (R.IsReady() && DrawMenu["drawR"].Cast<CheckBox>().CurrentValue)
+                {
+                    Drawing.DrawCircle(User.Position, R.Range, Color.MediumPurple);
+                }
+                else
+                {
+                }
             }
 
-            if (Q.IsReady() && DrawMenu["drawQ"].Cast<CheckBox>().CurrentValue)
-            {
-                Drawing.DrawCircle(User.Position, Q.Range, Color.Purple);
-            }
-            else
-            {
-            }
 
-            if (W.IsReady() && DrawMenu["drawW"].Cast<CheckBox>().CurrentValue)
-            {
-                Drawing.DrawCircle(User.Position, W.Range, Color.MediumPurple);
-            }
-            else
-            {
-            }
-
-            if (E.IsReady() && DrawMenu["drawE"].Cast<CheckBox>().CurrentValue)
-            {
-                Drawing.DrawCircle(User.Position, E.Range, Color.MediumPurple);
-            }
-            else
-            {
-            }
-
-            if (R.IsReady() && DrawMenu["drawR"].Cast<CheckBox>().CurrentValue)
-            {
-                Drawing.DrawCircle(User.Position, R.Range, Color.MediumPurple);
-            }
-            else
-            {
-            }
         }
-
-
     }
 }
