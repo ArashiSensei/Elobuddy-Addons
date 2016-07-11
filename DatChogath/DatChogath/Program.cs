@@ -128,7 +128,7 @@ namespace DatChogath
             Game.OnTick += Game_OnTick;
             Interrupter.OnInterruptableSpell += Interrupter_OnInterruptableSpell;
 
-            Chat.Print("<b><font color=\"#FF33D6\">DatChogath -</font></b>" + AddonVersion + " <b><font color=\"#FF33D6\">- By Arashi Loaded !</font></b>");
+            Chat.Print("<b><font color=\"#FF33D6\"> DatChogath -</font></b>" + AddonVersion + " <b><font color=\"#FF33D6\">- By Arashi Loaded !</font></b>");
         }
 
 
