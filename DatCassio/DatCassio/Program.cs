@@ -101,7 +101,6 @@ namespace DatCassio
             //Sub MiscMenu
             MiscMenu = CassioMenu.AddSubMenu("Other Settings");
             MiscMenu.AddGroupLabel("Misc Settings");
-            MiscMenu.Add("Gapcloser", new CheckBox("Use R on Gapcloser", false));
             MiscMenu.Add("Inter", new CheckBox("Use R to interrupt", false));
             MiscMenu.Add("eKS", new CheckBox("Make your ally mad with E (KS)"));
             MiscMenu.AddGroupLabel("Flee Settings");
@@ -123,6 +122,7 @@ namespace DatCassio
 
             Game.OnTick += Game_OnTick;
             Drawing.OnDraw += Drawing_OnDraw;
+            Interrupter.OnInterruptableSpell += Interrupter_OnInterruptableSpell;
 
             Chat.Print("<b><font color=\"#FF33D6\">DatCassio -</font></b> " + AddonVersion + " <b><font color=\"#FF33D6\">- By Arashi Loaded !</font></b>");
         }
@@ -149,6 +149,7 @@ namespace DatCassio
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
                 LaneClear();
+                LastHit();
 
             }
 
@@ -326,8 +327,26 @@ namespace DatCassio
 
         private static void LastHit()
         {
+            var Elasthit = FarmMenu["lasthitE"].Cast<CheckBox>().CurrentValue;
 
+           
+
+            if (E.IsReady() && Elasthit)
+            {
+                foreach (
+                    var enemyMinion in
+                        ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsEnemy && x.Distance(User) <= E.Range))
+                {
+                    if (enemyMinion.IsValidTarget() && E.IsInRange(enemyMinion) && User.GetSpellDamage(enemyMinion, SpellSlot.E, 0) - 20 >= enemyMinion.Health  )
+                    {
+                        E.Cast(enemyMinion);
+                    }
+                }
+
+            }
         }
+            
+        
 
         private static void JungleClear()
         {
@@ -370,10 +389,10 @@ namespace DatCassio
         private static void Flee()
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
-            var useQ = ComboMenu["qFlee"].Cast<CheckBox>().CurrentValue;
-            var useW = ComboMenu["wFlee"].Cast<CheckBox>().CurrentValue;
+            var FleeQ = ComboMenu["qFlee"].Cast<CheckBox>().CurrentValue;
+            var FleeW = ComboMenu["wFlee"].Cast<CheckBox>().CurrentValue;
 
-            if (useQ)
+            if (FleeQ)
             {
 
                 var Qpred = Q.GetPrediction(target);
@@ -384,7 +403,7 @@ namespace DatCassio
                 }
             }
 
-            if (useW)
+            if (FleeW)
             {
 
                 var Wpred = W.GetPrediction(target);
@@ -400,7 +419,40 @@ namespace DatCassio
 
         private static void eKS()
         {
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            var EKS = MiscMenu["eKS"].Cast<CheckBox>().CurrentValue;
+            var eDamage = User.GetSpellDamage(target, SpellSlot.E, 0) * 0.9;
 
+            if (target == null) return;
+
+            if (EKS)
+            {
+
+                if (E.IsReady() && EKS && E.IsInRange(target) && target.Health < eDamage)
+                {
+                    Q.Cast(target);
+                }
+            }
+
+
+        }
+        private static void Interrupter_OnInterruptableSpell(Obj_AI_Base sender,
+           Interrupter.InterruptableSpellEventArgs e)
+        {
+            var Inter = MiscMenu["Inter"].Cast<CheckBox>().CurrentValue;
+
+            {
+                if (Inter)
+                {
+                    if (sender.IsEnemy && R.IsReady() && sender.Distance(User) <= R.Range)
+                    {
+                        R.Cast(sender);
+
+                    }
+                   
+
+                }
+            }
         }
 
         private static void IgniteUsage()
