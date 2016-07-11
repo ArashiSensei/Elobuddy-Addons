@@ -56,10 +56,10 @@ namespace DatCassio
             ComboMenu = CassioMenu.AddSubMenu("Combo Settings");
 
             ComboMenu.AddGroupLabel(" Spells in Combo Mode");
-            ComboMenu.Add("Q", new CheckBox("Use Q"));
-            ComboMenu.Add("W", new CheckBox("Use W"));
-            ComboMenu.Add("E", new CheckBox("Use E"));
-            ComboMenu.Add("R", new CheckBox("Use R"));
+            ComboMenu.Add("qCombo", new CheckBox("Use Q"));
+            ComboMenu.Add("wCombo", new CheckBox("Use W"));
+            ComboMenu.Add("eCombo", new CheckBox("Use E"));
+            ComboMenu.Add("rCombo", new CheckBox("Use R"));
             ComboMenu.Add("rMin", new Slider("Cast R if x enemies", 2, 1, 5));
             ComboMenu.AddSeparator();
             ComboMenu.AddGroupLabel("Others Combo Settings");
@@ -95,7 +95,7 @@ namespace DatCassio
             FarmMenu.AddGroupLabel("Spells in JungleClear");
             FarmMenu.Add("jungQ", new CheckBox("Use Q"));
             FarmMenu.Add("jungW", new CheckBox("Use W"));
-            FarmMenu.Add("jungE", new CheckBox("Use E"));
+            FarmMenu.Add("jungE", new CheckBox("Use E ( Only if poisonned)"));
 
 
             //Sub MiscMenu
@@ -106,6 +106,7 @@ namespace DatCassio
             MiscMenu.Add("eKS", new CheckBox("Make your ally mad with E (KS)"));
             MiscMenu.AddGroupLabel("Flee Settings");
             MiscMenu.Add("qFlee", new CheckBox("Use Q to move faster"));
+            MiscMenu.Add("wFlee", new CheckBox("Use W to Slow enemies"));
 
 
             //Sub DrawMenu
@@ -162,13 +163,66 @@ namespace DatCassio
                 Flee();
 
             }
+            eKS();
+            IgniteUsage();
 
 
 
         }
+
         private static void Combo()
         {
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            var useQ = ComboMenu["qCombo"].Cast<CheckBox>().CurrentValue;
+            var useW = ComboMenu["wCombo"].Cast<CheckBox>().CurrentValue;
+            var useE = ComboMenu["eCombo"].Cast<CheckBox>().CurrentValue;
+            var useR = ComboMenu["rCombo"].Cast<CheckBox>().CurrentValue;
 
+            if (target == null) return;
+            {
+                if (useR)
+                {
+
+                    var Rpred = R.GetPrediction(target);
+                    if (!target.IsValidTarget()) return;
+                    if (R.IsInRange(target) && Q.IsReady() && Rpred.HitChance >= HitChance.High && User.CountEnemiesInRange(R.Range) >= ComboMenu["rMin"].Cast<Slider>().CurrentValue)
+                    {
+                        R.Cast(target);
+                    }
+                }
+
+                if (useQ)
+                {
+
+                    var Qpred = Q.GetPrediction(target);
+                    if (!target.IsValidTarget()) return;
+                    if (Q.IsInRange(target) && Q.IsReady() && Qpred.HitChance >= HitChance.High)
+                    {
+                        Q.Cast(target);
+                    }
+                }
+
+                if (useW)
+                {
+
+                    var Wpred = W.GetPrediction(target);
+                    if (!target.IsValidTarget()) return;
+                    if (W.IsInRange(target) && Q.IsReady() && Wpred.HitChance >= HitChance.High)
+                    {
+                        W.Cast(target);
+                    }
+
+                }
+
+                if (useE)
+                {
+                    if (!target.IsValidTarget()) return;
+                    if (E.IsInRange(target) && E.IsReady() && PoisonnedTarget(target))
+                    {
+                        E.Cast(target);
+                    }
+                }
+            }
         }
 
         private static void Harass()
@@ -216,8 +270,59 @@ namespace DatCassio
 
         private static void LaneClear()
         {
+            var QLane = FarmMenu["Q"].Cast<CheckBox>().CurrentValue;
+            var WLane = FarmMenu["W"].Cast<CheckBox>().CurrentValue;
+            var ELane = FarmMenu["poisE"].Cast<CheckBox>().CurrentValue;
 
-        }
+            if (Q.IsReady() && QLane)
+            {
+                
+                foreach (
+                    var enemyMinion in
+                        ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsEnemy && x.Distance(User) <= Q.Range))
+                {
+                    var enemyMinionsInRange =
+                        ObjectManager.Get<Obj_AI_Minion>()
+                            .Where(x => x.IsEnemy && x.Distance(enemyMinion) <= 185)
+                            .Count();
+                    if (enemyMinion.IsValidTarget() && enemyMinionsInRange >= FarmMenu["mqMin"].Cast<Slider>().CurrentValue && ObjectManager.Player.ManaPercent >= FarmMenu["qClear"].Cast<Slider>().CurrentValue)
+                    {
+                        Q.Cast(enemyMinion);
+                    }
+                }
+            }
+
+                if (W.IsReady() && WLane)
+                {
+                    foreach (
+                        var enemyMinion in
+                            ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsEnemy && x.Distance(User) <= W.Range))
+                    {
+                        if (enemyMinion.IsValidTarget() && User.CountEnemyMinionsInRange(Q.Range) >= FarmMenu["mwMin"].Cast<Slider>().CurrentValue && ObjectManager.Player.ManaPercent >= FarmMenu["wClear"].Cast<Slider>().CurrentValue)
+                        {
+                            W.Cast(enemyMinion.Position);
+                        }
+                    }
+
+                }
+
+                if (E.IsReady() && ELane)
+                {
+                    foreach (
+                        var enemyMinion in
+                            ObjectManager.Get<Obj_AI_Minion>().Where(x => x.IsEnemy && x.Distance(User) <= E.Range))
+                    {
+                        if (enemyMinion.IsValidTarget() && ObjectManager.Player.ManaPercent >= FarmMenu["eClear"].Cast<Slider>().CurrentValue && PoisonnedMinion(enemyMinion))
+                        {
+                            E.Cast(enemyMinion);
+                        }
+                    }
+
+                }
+            }
+        
+
+    
 
         private static void LastHit()
         {
@@ -227,12 +332,98 @@ namespace DatCassio
         private static void JungleClear()
         {
 
+            var QJung = FarmMenu["jungQ"].Cast<CheckBox>().CurrentValue;
+            var EJung = FarmMenu["jungE"].Cast<CheckBox>().CurrentValue;
+            var WJung = FarmMenu["jungW"].Cast<CheckBox>().CurrentValue;
+            var minion =
+                   EntityManager.MinionsAndMonsters.GetJungleMonsters(User.ServerPosition, 950f, true)
+                       .FirstOrDefault();
+
+            if (QJung)
+            {
+                
+                if (Q.IsReady() && QJung && minion != null)
+                {
+                    Q.Cast(minion.Position);
+                }
+            }
+
+            if (W.IsReady() && WJung && minion != null)
+                {
+                    W.Cast(minion.Position);
+                }
+
+            if (EJung)
+            {
+
+                if (E.IsReady() && EJung && minion != null && PoisonnedMinion(minion))
+                {
+                    Q.Cast(minion.Position);
+                }
+            }
         }
+
+
+
+        
 
         private static void Flee()
         {
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            var useQ = ComboMenu["qFlee"].Cast<CheckBox>().CurrentValue;
+            var useW = ComboMenu["wFlee"].Cast<CheckBox>().CurrentValue;
+
+            if (useQ)
+            {
+
+                var Qpred = Q.GetPrediction(target);
+                if (!target.IsValidTarget()) return;
+                if (Q.IsInRange(target) && Q.IsReady() && Qpred.HitChance >= HitChance.High)
+                {
+                    Q.Cast(target);
+                }
+            }
+
+            if (useW)
+            {
+
+                var Wpred = W.GetPrediction(target);
+                if (!target.IsValidTarget()) return;
+                if (W.IsInRange(target) && Q.IsReady() && Wpred.HitChance >= HitChance.High)
+                {
+                    W.Cast(target);
+                }
+
+            }
 
         }
+
+        private static void eKS()
+        {
+
+        }
+
+        private static void IgniteUsage()
+        {
+
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+
+
+            if (Q.IsReady() && W.IsReady() && R.IsReady() && E.IsReady()) return;
+
+            else
+            {
+                var useIgnite = ComboMenu["Ign"].Cast<CheckBox>().CurrentValue;
+
+                if (useIgnite && target != null)
+                {
+                    if (User.GetSummonerSpellDamage(target, DamageLibrary.SummonerSpells.Ignite) > target.Health)
+                        User.Spellbook.CastSpell(Ignite, target);
+                }
+            }
+        }
+
+    
 
         public static bool PoisonnedTarget(Obj_AI_Base target)
         {
