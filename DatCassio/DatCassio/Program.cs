@@ -118,6 +118,7 @@ namespace DatCassio
             DrawMenu.Add("allDr", new CheckBox("Disable all Drawings", false));
 
             Game.OnTick += Game_OnTick;
+            Drawing.OnDraw += Drawing_OnDraw;
 
             Chat.Print("<b><font color=\"#FF33D6\">DatCassio -</font></b> " + AddonVersion + " <b><font color=\"#FF33D6\">- By Arashi Loaded !</font></b>");
         }
@@ -155,6 +156,46 @@ namespace DatCassio
 
 
 
+        }
+
+        private static void Drawing_OnDraw(EventArgs args)
+        {
+            if (DrawMenu["AllDr"].Cast<CheckBox>().CurrentValue)
+            {
+                return;
+            }
+
+            if (Q.IsReady() && DrawMenu["drawQ"].Cast<CheckBox>().CurrentValue)
+            {
+                Drawing.DrawCircle(User.Position, Q.Range, Color.Purple);
+            }
+            else
+            {
+            }
+
+            if (W.IsReady() && DrawMenu["drawW"].Cast<CheckBox>().CurrentValue)
+            {
+                Drawing.DrawCircle(User.Position, W.Range, Color.MediumPurple);
+            }
+            else
+            {
+            }
+
+            if (E.IsReady() && DrawMenu["drawE"].Cast<CheckBox>().CurrentValue)
+            {
+                Drawing.DrawCircle(User.Position, E.Range, Color.MediumPurple);
+            }
+            else
+            {
+            }
+
+            if (R.IsReady() && DrawMenu["drawR"].Cast<CheckBox>().CurrentValue)
+            {
+                Drawing.DrawCircle(User.Position, R.Range, Color.MediumPurple);
+            }
+            else
+            {
+            }
         }
 
 
